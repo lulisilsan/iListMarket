@@ -36,13 +36,8 @@ class ViewController: UIViewController {
     
     //BOTÃO SALVAR
     @IBAction func btSave(_ sender: Any) {
-        
-        
-        let name = tfNameProduct.text!
-        let qtt = tfQuantityProduct.text!
-        
-        
-        insertProduct(item: Item(nameProduct: name, quantityProduct: Int(qtt)!))
+
+        insertProduct(item: getItemFromField())
         clearField()
         view.endEditing(true)
     }
@@ -51,10 +46,8 @@ class ViewController: UIViewController {
     @IBAction func btDelete(_ sender: Any) {
         
         view.endEditing(true)
-        let name = tfNameProduct.text!
-        let qtt = tfQuantityProduct.text!
         
-        deleteProduct(item: Item(nameProduct: name, quantityProduct: Int(qtt)!))
+        deleteProduct(item: getItemFromField())
         clearField()
         }
         
@@ -108,7 +101,7 @@ class ViewController: UIViewController {
     func deleteProduct(item: Item) {
         if !products.isEmpty {
             if validProduct(itemtf: item) {
-                products.removeAll() { $0.nameProduct == item.nameProduct }
+                products.removeAll() { $0.nameProduct.lowercased() == item.nameProduct.lowercased() }
                 tvProducts.reloadData()
             }
         }        
@@ -116,7 +109,7 @@ class ViewController: UIViewController {
     
     //RECUPERA O PRODUTO
     func getProduct(productName: String) -> Item? {
-       return products.first() { $0.nameProduct == productName }
+        return products.first() { $0.nameProduct.lowercased() == productName.lowercased() }
         
     }
     
@@ -130,9 +123,16 @@ class ViewController: UIViewController {
         btDelete.isHidden = true
     }
     
+    func getItemFromField() -> Item {
+        let product = tfNameProduct.text!
+        let qtt = tfQuantityProduct.text!
+        
+        return Item(nameProduct: product, quantityProduct: Int(qtt)!)
+    }
+    
     //ATUALIZA A QUANTIDADE DE UM PRODUTO JA EXISTENTE
     func updateProducts(item: Item) {
-        let product = products.first() { $0.nameProduct == item.nameProduct}
+        let product = products.first() { $0.nameProduct.lowercased() == item.nameProduct.lowercased()}
         product!.quantityProduct = item.quantityProduct
             tvProducts.reloadData()
     }
@@ -164,7 +164,7 @@ extension ViewController : UITextFieldDelegate {
     //VERIFICA SE O PRIMEIRO TEXTFIELD ESTA PREENCHIDO E JÁ POPULA ELE
     func textFieldDidEndEditing(_ textField: UITextField) {
         if textField == tfNameProduct {
-           showProduct(item: getProduct(productName: tfNameProduct.text!))
+            showProduct(item: getProduct(productName: tfNameProduct.text!))
         }
     }
 }
